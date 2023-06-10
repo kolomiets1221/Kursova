@@ -1,1 +1,0 @@
-# DjangoCourseWork2
