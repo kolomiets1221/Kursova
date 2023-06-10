@@ -11,6 +11,7 @@ class Shift(models.Model):
     producted = models.IntegerField(null=True)
     employ_start_time = models.DateTimeField(null=True)
     employ_end_time = models.DateTimeField(null=True)
+    started = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
 
     def __str__(self):
@@ -33,7 +34,8 @@ class Employer(models.Model):
     )
     position = models.CharField(max_length=100, choices=positions)
 
-    avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True, default='static/avatars/default.jpg')
+    avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True,
+                               default='static/avatars/default.jpg')
 
     def __str__(self):
         return str(self.name) + " " + str(self.position)
@@ -45,3 +47,11 @@ class Token(models.Model):
 
     def __str__(self):
         return str(self.token) + " " + str(self.user)
+
+
+class Start_shift_codes(models.Model):
+    code = models.CharField(max_length=100)
+    valid = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.code) + " " + str(self.valid)

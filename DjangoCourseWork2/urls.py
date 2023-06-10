@@ -26,5 +26,10 @@ urlpatterns = [
     path('get_shifts', views.get_shifts, name='get_shifts'),
     path('avatar', views.avatars, name='avatar'),
     path('get_employers', views.get_employers, name='get_employers'),
+    path('get_all_shifts', views.get_all_shifts, name='get_all_shifts'),
+    path('get_code', views.get_code, name='get_code'),
+    path("start_shift", views.start_shift, name="start_shift"),
+    path("end_shift", views.end_shift, name="end_shift"),
+    path("get_active_shifts", views.get_active_shifts, name="get_shift"),
 ]
 

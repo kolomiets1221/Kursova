@@ -111,13 +111,122 @@ def get_employers(request):
         return JsonResponse({'error': 'missing parameters'})
     if not Token.objects.filter(token=token).exists():
         return JsonResponse({'error': 'invalid token'})
-    user = Token.objects.get(token=token).user
-    employer = Employer.objects.get(user=user)
-    employers = Employer.objects.filter(position=employer.position)
-    # get all emploers with higher  or equal position
-    employers = employers.filter(position__gte=employer.position)
+    employers = Employer.objects.all()
     return JsonResponse({'employers': [{
         'name': employer.name,
         'img_url': f"{home_url}/avatar?name={employer.name}",
         'position': employer.get_position_display(),
     } for employer in employers]})
+
+
+def get_all_shifts(request):
+    token = request.GET.get('token')
+    if token is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    shifts = Shift.objects.all()
+    return JsonResponse({'shifts': [{
+        "id": shift.id,
+        'start_time': shift.start_time,
+        'end_time': shift.end_time,
+        "producted": shift.producted,
+        "employ_start_time": shift.employ_start_time,
+        "employ_end_time": shift.employ_end_time,
+        "finished": shift.finished
+    } for shift in shifts]})
+
+
+def get_code(request):
+    codes = Start_shift_codes.objects.all()
+    if len(codes) > 1:
+        for code in codes:
+            code.delete()
+        code = Start_shift_codes(
+            code=secrets.token_hex(5).upper(),
+            valid=timezone.now() + timezone.timedelta(minutes=5))
+        code.save()
+    elif len(codes) == 0:
+        code = Start_shift_codes(
+            code=secrets.token_hex(5).upper(),
+            valid=timezone.now() + timezone.timedelta(minutes=5))
+        code.save()
+
+    valid_code = Start_shift_codes.objects.all()[0]
+    if valid_code.valid < timezone.now():
+        valid_code.delete()
+        code = Start_shift_codes(
+            code=secrets.token_hex(5).upper(),
+            valid=timezone.now() + timezone.timedelta(minutes=5))
+        code.save()
+        valid_code = Start_shift_codes.objects.all()[0]
+    return JsonResponse({
+        'code': valid_code.code,
+        "time_left": int((valid_code.valid - timezone.now()).total_seconds())
+    })
+
+
+def start_shift(request):
+    token = request.GET.get('token')
+    code = request.GET.get('code')
+    id = request.GET.get('id')
+    if token is None or code is None or id is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    if not Start_shift_codes.objects.filter(code=code).exists():
+        return JsonResponse({'error': 'invalid code'})
+    if not Shift.objects.filter(id=id).exists():
+        return JsonResponse({'error': 'invalid id'})
+    emoloer = Employer.objects.get(user=Token.objects.get(token=token).user)
+    if Shift.objects.filter(employee=emoloer, started=True, finished=False).exists():
+        return JsonResponse({'error': 'you already have a shift'})
+    if not Shift.objects.filter(id=id, employee=emoloer).exists():
+        return JsonResponse({'error': 'invalid id'})
+    shift = Shift.objects.get(id=id, employee=emoloer)
+    if shift.started:
+        return JsonResponse({'error': 'shift already started'})
+    shift.employ_start_time = timezone.now()
+    shift.started = True
+    shift.save()
+    return JsonResponse({'success': 'shift started'})
+
+def end_shift(request):
+    token = request.GET.get('token')
+    producted = request.GET.get('producted')
+    id = request.GET.get('id')
+    if token is None or producted is None or id is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    employee = Employer.objects.get(user=Token.objects.get(token=token).user)
+    if not Shift.objects.filter(id=id, employee=employee, started=True, finished=False).exists():
+        return JsonResponse({'error': 'invalid id or shift already finished'})
+    shift = Shift.objects.get(id=id, employee=employee, started=True, finished=False)
+    shift.employ_end_time = timezone.now()
+    shift.producted = int(producted)
+    shift.finished = True
+    shift.save()
+    return JsonResponse({'success': 'shift ended'})
+
+def get_active_shifts(request):
+    token = request.GET.get('token')
+    if token is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    emploer = Employer.objects.get(user=Token.objects.get(token=token).user)
+    shifts = Shift.objects.filter(employee=emploer, started=True, finished=False)
+    return JsonResponse({'shifts': [{
+        "id": shift.id,
+        'start_time': shift.start_time,
+        'end_time': shift.end_time,
+        "producted": shift.producted,
+        "employ_start_time": shift.employ_start_time,
+        "employ_end_time": shift.employ_end_time,
+        "finished": shift.finished
+    } for shift in shifts]})
+
+
+
+
