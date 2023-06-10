@@ -31,5 +31,7 @@ urlpatterns = [
     path("start_shift", views.start_shift, name="start_shift"),
     path("end_shift", views.end_shift, name="end_shift"),
     path("get_active_shifts", views.get_active_shifts, name="get_shift"),
+    path("user_info", views.user_info, name="user_info"),
+    path("get_my_shifts", views.get_my_shifts, name="get_my_shifts"),
 ]
 

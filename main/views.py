@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate
 from django.http import JsonResponse, HttpResponse
-from django.templatetags.static import static
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import *
 import random
 from django.utils import timezone
@@ -18,7 +17,7 @@ def hello_world(request):
 def fill_shift_table(employer, num_shifts):
     for i in range(num_shifts):
         start_time = timezone.now() + timezone.timedelta(days=i + 7)
-        end_time = start_time + timezone.timedelta(hours=random.randint(4, 8))
+        end_time = start_time + timezone.timedelta(hours=random.randint(7, 10))
         shift = Shift.objects.create(
             start_time=start_time,
             end_time=end_time,
@@ -54,7 +53,7 @@ def register(request):
 
     token = Token(user=user, token=secrets.token_hex(16))
     token.save()
-    fill_shift_table(employee, 10)
+    fill_shift_table(employee, random.randint(5, 25))
     return JsonResponse({'success': 'user created', 'token': token.token})
 
 
@@ -131,6 +130,7 @@ def get_all_shifts(request):
         'start_time': shift.start_time,
         'end_time': shift.end_time,
         "producted": shift.producted,
+        "worktime": f"{shift.work_time()}",
         "employ_start_time": shift.employ_start_time,
         "employ_end_time": shift.employ_end_time,
         "finished": shift.finished
@@ -191,6 +191,7 @@ def start_shift(request):
     shift.save()
     return JsonResponse({'success': 'shift started'})
 
+
 def end_shift(request):
     token = request.GET.get('token')
     producted = request.GET.get('producted')
@@ -208,6 +209,7 @@ def end_shift(request):
     shift.finished = True
     shift.save()
     return JsonResponse({'success': 'shift ended'})
+
 
 def get_active_shifts(request):
     token = request.GET.get('token')
@@ -227,6 +229,41 @@ def get_active_shifts(request):
         "finished": shift.finished
     } for shift in shifts]})
 
+def get_my_shifts(request):
+    token = request.GET.get('token')
+    if token is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    emploer = Employer.objects.get(user=Token.objects.get(token=token).user)
+    shifts = Shift.objects.filter(employee=emploer)
+    return JsonResponse({'shifts': [{
+        "id": shift.id,
+        'start_time': shift.start_time,
+        'end_time': shift.end_time,
+        "producted": shift.producted,
+        "employ_start_time": shift.employ_start_time,
+        "employ_end_time": shift.employ_end_time,
+        "finished": shift.finished
+            } for shift in shifts]})
 
 
-
+def user_info(request):
+    token = request.GET.get('token')
+    if token is None:
+        return JsonResponse({'error': 'missing parameters'})
+    if not Token.objects.filter(token=token).exists():
+        return JsonResponse({'error': 'invalid token'})
+    emploer = Employer.objects.get(user=Token.objects.get(token=token).user)
+    coef = Coefs.objects.get(position=emploer.get_position_display())
+    return JsonResponse({
+        "name": emploer.name,
+        "img_url": f"{home_url}/avatar?name={emploer.name}",
+        "position": emploer.get_position_display(),
+        "total_shifts": len(Shift.objects.filter(employee=emploer)),
+        "average_worktime": f"{emploer.employ_average_work_time()}",
+        "total_producted": emploer.total_producted(),
+        "worked_last_mouth": f"{emploer.worked_hours_last_month()}",
+        "shift_in_next_mouth": f"{emploer.shifts_for_month()}",
+        "expected_salary": f"{float(emploer.total_work_hours())*coef.coef*2006}"
+    })
