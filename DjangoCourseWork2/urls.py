@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', views.hello_world, name='hello_world'),
     path('register', views.register, name='register'),
-    path('login', views.login, name='login'),
+    path('login', views.login_api, name='login'),
     path('get_shifts', views.get_shifts, name='get_shifts'),
     path('avatar', views.avatars, name='avatar'),
     path('get_employers', views.get_employers, name='get_employers'),
@@ -33,5 +33,7 @@ urlpatterns = [
     path("get_active_shifts", views.get_active_shifts, name="get_shift"),
     path("user_info", views.user_info, name="user_info"),
     path("get_my_shifts", views.get_my_shifts, name="get_my_shifts"),
+    path("ds_rq", views.displayrequest, name="displayrequest"),
+    path("test", views.test, name="get_my_requests"),
 ]
 

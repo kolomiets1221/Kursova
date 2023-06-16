@@ -1,11 +1,15 @@
-from django.contrib.auth import authenticate
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User, Group
-from .models import *
 import random
-from django.utils import timezone
 import secrets
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
+
+from .models import *
 
 home_url = 'http://127.0.0.1:8000'
 
@@ -28,7 +32,6 @@ def fill_shift_table(employer, num_shifts):
         print(f"Shift created: {shift}")
 
 
-@csrf_exempt
 def register(request):
     username = request.GET.get('username')
     password = request.GET.get('password')
@@ -45,8 +48,8 @@ def register(request):
         username=username,
         password=password,
         email=email,
-        first_name=name.split("_")[0],
-        last_name=name.split("_")[1])
+        first_name=name.split(" ")[0],
+        last_name=name.split(" ")[1])
     user.save()
     employee = Employer(user=user, name=name, position=position)
     employee.save()
@@ -54,11 +57,12 @@ def register(request):
     token = Token(user=user, token=secrets.token_hex(16))
     token.save()
     fill_shift_table(employee, random.randint(5, 25))
+    login(request, user)
     return JsonResponse({'success': 'user created', 'token': token.token})
 
 
 @csrf_exempt
-def login(request):
+def login_api(request):
     username = request.GET.get('username')
     password = request.GET.get('password')
 
@@ -72,7 +76,19 @@ def login(request):
 
     token = Token(user=user, token=secrets.token_hex(16))
     token.save()
+    login(request, user)
+
     return JsonResponse({'success': 'login successful', 'token': token.token})
+
+
+@csrf_exempt
+def displayrequest(request):
+    referring_url = request.META.get('HTTP_REFERER')
+    print(request.GET)
+    res = redirect(referring_url)
+    # set cookie
+    res.set_cookie('name', 'value')
+    return res
 
 
 def get_shifts(request):
@@ -135,6 +151,11 @@ def get_all_shifts(request):
         "employ_end_time": shift.employ_end_time,
         "finished": shift.finished
     } for shift in shifts]})
+
+
+def test(request):
+    print(request.GET)
+    return JsonResponse({'success': 'test'})
 
 
 def get_code(request):
@@ -229,6 +250,7 @@ def get_active_shifts(request):
         "finished": shift.finished
     } for shift in shifts]})
 
+
 def get_my_shifts(request):
     token = request.GET.get('token')
     if token is None:
@@ -245,7 +267,7 @@ def get_my_shifts(request):
         "employ_start_time": shift.employ_start_time,
         "employ_end_time": shift.employ_end_time,
         "finished": shift.finished
-            } for shift in shifts]})
+    } for shift in shifts]})
 
 
 def user_info(request):
@@ -265,5 +287,5 @@ def user_info(request):
         "total_producted": emploer.total_producted(),
         "worked_last_mouth": f"{emploer.worked_hours_last_month()}",
         "shift_in_next_mouth": f"{emploer.shifts_for_month()}",
-        "expected_salary": f"{float(emploer.total_work_hours())*coef.coef*2006}"
+        "expected_salary": f"{float(emploer.total_work_hours()) * coef.coef * 2006}"
     })
