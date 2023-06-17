@@ -5,6 +5,8 @@ import LoginPage from "./components/login_page";
 import RegisterPage from "./components/register_page";
 import './App.css';
 import * as api from "./components/utils/api";
+import CodeScreen from "./components/code_screen";
+import Header from "./components/header";
 
 let username = "";
 let password = "";
@@ -89,27 +91,31 @@ function App() {
 
 
     return (
-        <Routes>
-            <Route path="/" element={<Main/>}/>
-            <Route path="/login" element={<LoginPage
-                changeUsername={changeUsername}
-                changePassword={changePassword}
-                login={login}
-                is_loading={is_loading}
-                message={message}
-                remember={handle_remember}
-            />}/>
-            <Route path="/register" element={<RegisterPage
-                changeEmail={changeEmail}
-                changeName={changeName}
-                changePassword={changePassword}
-                changePosition={changePosition}
-                changeUsername={changeUsername}
-                register_user={register}
-                is_loading={is_loading}
-                message={message}
-            />}/>
-        </Routes>
+       <div>
+           <Header/>
+           <Routes>
+               <Route path="/" element={<Main/>}/>
+               <Route path="/login" element={<LoginPage
+                   changeUsername={changeUsername}
+                   changePassword={changePassword}
+                   login={login}
+                   is_loading={is_loading}
+                   message={message}
+                   remember={handle_remember}
+               />}/>
+               <Route path="/register" element={<RegisterPage
+                   changeEmail={changeEmail}
+                   changeName={changeName}
+                   changePassword={changePassword}
+                   changePosition={changePosition}
+                   changeUsername={changeUsername}
+                   register_user={register}
+                   is_loading={is_loading}
+                   message={message}
+               />}/>
+               <Route path="/code" element={<CodeScreen/>}/>
+           </Routes>
+       </div>
     );
 }
 

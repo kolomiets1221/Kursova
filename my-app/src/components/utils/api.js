@@ -77,3 +77,23 @@ export const get_profile = () => {
             throw error;
         });
 }
+
+export const get_code = () => {
+    return axios
+        .get('http://127.0.0.1:8000/get_code')
+        .then(function (response) {
+                return response;
+            }
+        )
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+}

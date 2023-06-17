@@ -12,10 +12,14 @@ const Main = () => {
         });
     }, []);
 
+    const monye_format = (money) => {
+        return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
     return (
         <div>
             {data.shifts ? (
-                <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
                             <img
@@ -26,6 +30,7 @@ const Main = () => {
                             <div>
                                 <h2 className="text-xl font-bold">{data.name}</h2>
                                 <p className="text-gray-500">{data.position}</p>
+                                <p className="text-gray-500">Expected Salary {monye_format(parseInt(data.expected_salary))} UAH</p>
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -61,10 +66,10 @@ const Main = () => {
                                         Ended: {shift.employ_end_time}
                                     </p>
                                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                        Shift work time: {shift.shift_work_time}
+                                        Shift work time: {shift.shift_work_time} hours
                                     </p>
                                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                        finished: {shift.finished}
+                                        finished: {shift.finished ? "Yes" : "No"}
                                     </p>
                                     <a href="#"
                                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
