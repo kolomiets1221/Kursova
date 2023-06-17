@@ -1,5 +1,6 @@
 import random
 import secrets
+import time
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -199,21 +200,24 @@ def start_shift(request):
         return JsonResponse({'error': 'user is not authenticated'})
     user = User.objects.get(username=request.user)
     code = request.GET.get('code')
-    if code is None:
-        return JsonResponse({'error': 'missing parameters'})
-    if not Start_shift_codes.objects.filter(code=code).exists():
-        return JsonResponse({'error': 'invalid code'})
-    if not user.is_authenticated:
-        return JsonResponse({'error': 'user is not authenticated'})
+    id = request.GET.get('id')
+    if code is None or id is None:
+        return JsonResponse({'error': 'missing parameters'}, status=404)
+    if not Employer.objects.filter(user=user).exists():
+        return JsonResponse({'error': 'invalid user'}, status=404)
     employee = Employer.objects.get(user=user)
     if Shift.objects.filter(employee=employee, started=True, finished=False).exists():
-        return JsonResponse({'error': 'shift already started'})
-    code = Start_shift_codes.objects.get(code=code)
-    if code.valid < timezone.now():
-        return JsonResponse({'error': 'code expired'})
-    shift = Shift(employee=employee, start_time=timezone.now())
+        return JsonResponse({'error': 'You have already started shifts'}, status=403)
+    if not Shift.objects.filter(id=int(id)).exists():
+        return JsonResponse({'error': 'shift not found'}, status=404)
+    if not Start_shift_codes.objects.filter(code=code).exists():
+        return JsonResponse({'error': 'invalid code'}, status=404)
+    shift = Shift.objects.get(id=int(id))
+    shift.started = True
+    shift.employ_start_time = timezone.now()
     shift.save()
-    code.delete()
+    Start_shift_codes.objects.get(code=code).delete()
+    Start_shift_codes.objects.all().delete()
     return JsonResponse({'success': 'shift started'})
 
 
@@ -221,19 +225,20 @@ def end_shift(request):
     producted = request.GET.get('producted')
     id = request.GET.get('id')
     if producted is None or id is None:
-        return JsonResponse({'error': 'missing parameters'})
+        return JsonResponse({'error': 'missing parameters'}, status=404)
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'user is not authenticated'})
     user = User.objects.get(username=request.user)
-    employee = Employer.objects.get(user=user)
-    if not Shift.objects.filter(employee=employee, started=True, finished=False).exists():
-        return JsonResponse({'error': 'shift already ended'})
-    shift = Shift.objects.get(id=id)
-    shift.producted = producted
-    shift.end_time = timezone.now()
+    if not Employer.objects.filter(user=user).exists():
+        return JsonResponse({'error': 'invalid user'}, status=404)
+    if not Shift.objects.filter(id=int(id)).exists():
+        return JsonResponse({'error': 'shift not found'}, status=404)
+    shift = Shift.objects.get(id=int(id))
     shift.finished = True
+    shift.employ_end_time = timezone.now()
+    shift.producted = int(producted)
     shift.save()
-    return JsonResponse({'success': 'shift ended'})
+    return JsonResponse({'success': 'shift ended'}, status=200)
 
 
 def get_active_shifts(request):
@@ -271,7 +276,7 @@ def get_my_shifts(request):
 
 
 def mouth_format(mouth):
-    if len(str(mouth)) == 1:
+    if len(str(mouth)) < 2:
         return f"0{mouth}"
     return mouth
 
@@ -279,7 +284,7 @@ def mouth_format(mouth):
 def date_formater(date):
     if date is None:
         return "No data"
-    return f"{mouth_format(date.month)}.{mouth_format(date.day)} {date.hour}:{date.minute}"
+    return f"{mouth_format(date.month)}.{mouth_format(date.day)} {mouth_format(date.hour)}:{mouth_format(date.minute)}"
 
 
 def user_info(request):
@@ -298,7 +303,7 @@ def user_info(request):
         "total_producted": emploer.total_producted(),
         "worked_last_mouth": f"{emploer.worked_hours_last_month()}",
         "shift_in_next_mouth": f"{emploer.shifts_for_month()}",
-        "expected_salary": f"{round(float(emploer.total_work_hours()) * coef.coef * 120/1000,0)*1000}",
+        "expected_salary": f"{round(float(emploer.total_work_hours()) * coef.coef * 120 / 1000, 0) * 1000}",
         "shifts": [{
             "id": shift.id,
             "start_time": date_formater(shift.start_time),
@@ -307,6 +312,7 @@ def user_info(request):
             "employ_start_time": date_formater(shift.employ_start_time),
             "employ_end_time": date_formater(shift.employ_end_time),
             "shift_work_time": f"{shift.ShiftTime()}",
+            "is_active": shift.started and not shift.finished,
             "finished": shift.finished
         } for shift in shifts]
     })
