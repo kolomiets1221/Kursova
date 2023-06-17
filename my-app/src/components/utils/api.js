@@ -97,3 +97,55 @@ export const get_code = () => {
             throw error;
         });
 }
+
+export const start_shift = (code_u, id_u) => {
+    const options = {
+        params: {
+            code: code_u,
+            id: id_u,
+        },
+    };
+    return axios
+        .get('http://127.0.0.1:8000/start_shift', options)
+        .then(function (response) {
+                return response;
+            }
+        )
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+}
+
+export const end_shift = (id, prod) => {
+    const options = {
+        params: {
+            producted: prod,
+            id: id,
+        },
+    };
+    return axios
+        .get('http://127.0.0.1:8000/end_shift', options)
+        .then(function (response) {
+                return response;
+            }
+        )
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+}

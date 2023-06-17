@@ -9,20 +9,22 @@ const LoginPage = (
         message,
         login,
     }) => {
+
+    document.title = "Логін";
+
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Sign in to your account
+                    Увійдіть до свого облікового запису
                 </h2>
             </div>
-
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <div className="space-y-6">
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                                Email address
+                                Адреса електронної пошти
                             </label>
                             <div className="mt-1">
                                 <input
@@ -36,7 +38,7 @@ const LoginPage = (
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
+                                Пароль
                             </label>
                             <div className="mt-1">
                                 <input
@@ -61,13 +63,13 @@ const LoginPage = (
                                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 />
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                    Remember me
+                                    Запам'ятати мене
                                 </label>
                             </div>
 
                             <div className="text-sm">
                                 <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Forgot your password?
+                                    Забули пароль?
                                 </a>
                             </div>
                         </div>
@@ -88,7 +90,8 @@ const LoginPage = (
                                             fill="none"
                                             viewBox="0 0 24 24"
                                         >
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    strokeWidth="4"/>
                                             <path
                                                 className="opacity-75"
                                                 fill="currentColor"
@@ -97,7 +100,7 @@ const LoginPage = (
                                         </svg>
                                     </div>
                                 ) : null}
-                                Sign in
+                                Увійти
                             </button>
                         </div>
                     </div>
