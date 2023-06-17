@@ -298,12 +298,11 @@ def user_info(request):
         "total_producted": emploer.total_producted(),
         "worked_last_mouth": f"{emploer.worked_hours_last_month()}",
         "shift_in_next_mouth": f"{emploer.shifts_for_month()}",
-        "expected_salary": f"{float(emploer.total_work_hours()) * coef.coef * 2006}",
+        "expected_salary": f"{round(float(emploer.total_work_hours()) * coef.coef * 120/1000,0)*1000}",
         "shifts": [{
             "id": shift.id,
             "start_time": date_formater(shift.start_time),
             "end_time": date_formater(shift.end_time),
-            #if produced is None return 0
             "producted": shift.producted if shift.producted is not None else 0,
             "employ_start_time": date_formater(shift.employ_start_time),
             "employ_end_time": date_formater(shift.employ_end_time),

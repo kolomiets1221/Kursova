@@ -24,7 +24,7 @@ class Shift(models.Model):
         return str(round((self.employ_end_time - self.employ_start_time).total_seconds() / 3600, 2)) + " годин"
 
     def ShiftTime(self):
-        return str((self.end_time - self.start_time).total_seconds() / 3600) + " годин"
+        return str((self.end_time - self.start_time).total_seconds() / 3600)
 
     def __str__(self):
         return str(self.employee) + " " + str(self.start_time) + " " + str(self.end_time)
