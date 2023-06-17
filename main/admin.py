@@ -6,10 +6,10 @@ from .models import *
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
     ordering = ('start_time',)
-    list_display = ('id', 'employee', 'start_time', 'end_time', 'producted', 'employ_start_time', 'employ_end_time', 'started', 'finished', 'ShiftTime', 'work_time')
+    list_display = (
+    'id', 'employee', 'start_time', 'end_time', 'producted', 'employ_start_time', 'employ_end_time', 'started',
+    'finished', 'ShiftTime', 'work_time')
     search_fields = ('employee__name', 'start_time', 'end_time')
-
-
 
     Shift._meta.get_field('employee').verbose_name = 'Працівник'
     Shift._meta.get_field('start_time').verbose_name = 'Час початку зміни'
@@ -46,15 +46,6 @@ class employeeAdmin(admin.ModelAdmin):
     Employer.total_work_hours.short_description = 'Всього робочих годин'
 
 
-
-@admin.register(Token)
-class tokensAdmin(admin.ModelAdmin):
-    list_display = ('token', 'user')
-    search_fields = ('token', 'user')
-
-    Token._meta.get_field('token').verbose_name = 'Токен'
-    Token._meta.get_field('user').verbose_name = 'Користувач'
-
 @admin.register(Start_shift_codes)
 class start_shift_codesAdmin(admin.ModelAdmin):
     list_display = ('code', 'valid')
@@ -62,6 +53,7 @@ class start_shift_codesAdmin(admin.ModelAdmin):
 
     Start_shift_codes._meta.get_field('code').verbose_name = 'Код'
     Start_shift_codes._meta.get_field('valid').verbose_name = 'Дійсний до'
+
 
 @admin.register(Coefs)
 class coefsAdmin(admin.ModelAdmin):

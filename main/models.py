@@ -92,12 +92,6 @@ class Employer(models.Model):
         return str(self.name) + " " + str(self.position)
 
 
-class Token(models.Model):
-    token = models.CharField(max_length=100)
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.token) + " " + str(self.user)
 
 
 class Start_shift_codes(models.Model):
