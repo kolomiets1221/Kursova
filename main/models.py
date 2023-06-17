@@ -10,9 +10,9 @@ class Shift(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     employee = models.ForeignKey('employer', on_delete=models.CASCADE)
-    producted = models.IntegerField(null=True)
-    employ_start_time = models.DateTimeField(null=True)
-    employ_end_time = models.DateTimeField(null=True)
+    producted = models.IntegerField(null=True, blank=True)
+    employ_start_time = models.DateTimeField(null=True, blank=True)
+    employ_end_time = models.DateTimeField(null=True, blank=True)
     started = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
 
