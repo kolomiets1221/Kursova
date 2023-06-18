@@ -52,7 +52,7 @@ class Employer(models.Model):
     position = models.CharField(max_length=100, choices=positions)
 
     avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True,
-                               default='avatars/default.jpg')
+                               default='default.jpg')
 
     def employ_average_work_time(self):
         shifts = Shift.objects.filter(employee=self)

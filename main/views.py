@@ -96,67 +96,17 @@ def displayrequest(request):
     return res
 
 
-def get_shifts(request):
-    name = request.GET.get('name')
-    if name is None:
-        return JsonResponse({'error': 'missing parameters'})
-    if not Employer.objects.filter(name=name).exists():
-        return JsonResponse({'error': 'invalid name'})
-    employee = Employer.objects.get(name=name)
-
-    shifts = Shift.objects.filter(employee=employee)
-    return JsonResponse({'shifts': [{
-        'start_time': shift.start_time,
-        'end_time': shift.end_time,
-        "producted": shift.producted,
-        "employ_start_time": shift.employ_start_time,
-        "employ_end_time": shift.employ_end_time,
-        "finished": shift.finished
-    } for shift in shifts]})
-
-
-def avatars(request):
-    name = request.GET.get('name')
-    if name is None:
-        return JsonResponse({'error': 'missing parameters'})
-    if not Employer.objects.filter(name=name).exists():
-        return JsonResponse({'error': 'invalid name'})
-    employee = Employer.objects.get(name=name)
-    return HttpResponse(employee.avatar, content_type="image/png")
-
-
 def get_employers(request):
-    # get current user with out token
     if not request.user.is_authenticated:
-        return JsonResponse({'message': 'User is not authenticated'})
-    user = User.objects.get(username=request.user)
-    if not user.is_authenticated:
         return JsonResponse({'message': 'User is not authenticated'})
     employers = Employer.objects.all()
     return JsonResponse({'employers': [{
+        "id": employer.id,
         'name': employer.name,
-        'img_url': f"{home_url}/avatar?name={employer.name}",
+        'avatar': f"{home_url + employer.avatar.url}",
         'position': employer.get_position_display(),
+        "email": employer.user.email,
     } for employer in employers]})
-
-
-def get_all_shifts(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'message': 'User is not authenticated'})
-    user = User.objects.get(username=request.user)
-    if not user.is_authenticated:
-        return JsonResponse({'message': 'User is not authenticated'})
-    shifts = Shift.objects.all()
-    return JsonResponse({'shifts': [{
-        "id": shift.id,
-        'start_time': shift.start_time,
-        'end_time': shift.end_time,
-        "producted": shift.producted,
-        "worktime": f"{shift.work_time()}",
-        "employ_start_time": shift.employ_start_time,
-        "employ_end_time": shift.employ_end_time,
-        "finished": shift.finished
-    } for shift in shifts]})
 
 
 def test(request):
@@ -238,40 +188,6 @@ def end_shift(request):
     return JsonResponse({'success': 'shift ended'}, status=200)
 
 
-def get_active_shifts(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'message': 'User is not authenticated'})
-    user = User.objects.get(username=request.user)
-    emploer = Employer.objects.get(user=user)
-    shifts = Shift.objects.filter(employee=emploer, started=True, finished=False)
-    return JsonResponse({'shifts': [{
-        "id": shift.id,
-        'start_time': shift.start_time,
-        'end_time': shift.end_time,
-        "producted": shift.producted,
-        "employ_start_time": shift.employ_start_time,
-        "employ_end_time": shift.employ_end_time,
-        "finished": shift.finished
-    } for shift in shifts]})
-
-
-def get_my_shifts(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'message': 'User is not authenticated'})
-    user = User.objects.get(username=request.user)
-    emploer = Employer.objects.get(user=user)
-    shifts = Shift.objects.filter(employee=emploer)
-    return JsonResponse({'shifts': [{
-        "id": shift.id,
-        'start_time': shift.start_time,
-        'end_time': shift.end_time,
-        "producted": shift.producted,
-        "employ_start_time": shift.employ_start_time,
-        "employ_end_time": shift.employ_end_time,
-        "finished": shift.finished
-    } for shift in shifts]})
-
-
 def mouth_format(mouth):
     if len(str(mouth)) < 2:
         return f"0{mouth}"
@@ -293,7 +209,7 @@ def user_info(request):
     shifts = Shift.objects.filter(employee=emploer)
     return JsonResponse({
         "name": emploer.name,
-        "img_url": f"{home_url + emploer.avatar.url}",
+        "avatar": f"{home_url + emploer.avatar.url}",
         "position": emploer.get_position_display(),
         "total_shifts": len(Shift.objects.filter(employee=emploer)),
         "average_worktime": f"{emploer.employ_average_work_time()}",
@@ -315,12 +231,6 @@ def user_info(request):
     })
 
 
-from django import forms
-
-
-class ImageUploadForm(forms.Form):
-    image = forms.ImageField()
-
 @csrf_exempt
 def upload_image(request):
     if not request.user.is_authenticated:
@@ -335,3 +245,38 @@ def upload_image(request):
         return JsonResponse({'message': 'image uploaded'}, status=201)
     else:
         return JsonResponse({'message': 'image not uploaded'})
+
+
+def get_emploeyer_info(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'User is not authenticated'})
+    id = request.GET.get('id')
+    if id is None:
+        return JsonResponse({'error': 'missing parameters'}, status=404)
+    if not Employer.objects.filter(id=id).exists():
+        return JsonResponse({'error': 'invalid id'}, status=404)
+    emploer = Employer.objects.get(id=id)
+    coef = Coefs.objects.get(position=emploer.get_position_display())
+    shifts = Shift.objects.filter(employee=emploer)
+    return JsonResponse({
+        "name": emploer.name,
+        "avatar": f"{home_url + emploer.avatar.url}",
+        "position": emploer.get_position_display(),
+        "total_shifts": len(Shift.objects.filter(employee=emploer)),
+        "average_worktime": f"{emploer.employ_average_work_time()}",
+        "total_producted": emploer.total_producted(),
+        "worked_last_mouth": f"{emploer.worked_hours_last_month()}",
+        "shift_in_next_mouth": f"{emploer.shifts_for_month()}",
+        "expected_salary": f"{round(float(emploer.total_work_hours()) * coef.coef * 120 / 1000, 0) * 1000}",
+        "shifts": [{
+            "id": shift.id,
+            "start_time": date_formater(shift.start_time),
+            "end_time": date_formater(shift.end_time),
+            "producted": shift.producted if shift.producted is not None else 0,
+            "employ_start_time": date_formater(shift.employ_start_time),
+            "employ_end_time": date_formater(shift.employ_end_time),
+            "shift_work_time": f"{shift.ShiftTime()}",
+            "is_active": shift.started and not shift.finished,
+            "finished": shift.finished
+        } for shift in shifts]
+    })
