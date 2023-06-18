@@ -450,14 +450,25 @@ const Main = ({
                                             }`}
                                             onClick={() => {
                                                 set_is_loading(true);
-                                                const resp = api.start_shift(shiftCode, id);
-                                                resp.then((data) => {
-                                                    setOpen_s(false);
-                                                    set_is_loading(false);
-                                                    reload_data();
-                                                    createNotification('success', 'Зміна розпочата');
-                                                });
+                                                api.start_shift(shiftCode, id)
+                                                    .then((data) => {
+                                                        if (data.status === 200) {
+                                                            setOpen_s(false);
+                                                            set_is_loading(false);
+                                                            reload_data();
+                                                            createNotification('success', 'Зміна розпочата');
+                                                        } else {
+                                                            set_is_loading(false);
+                                                            setShiftCode('');
+                                                            createNotification('error', 'Помилка');
+                                                        }
+                                                    })
+                                                    .catch((error) => {
+                                                        set_is_loading(false);
+                                                        createNotification('error', 'Помилка');
+                                                    });
                                             }}
+
                                             disabled={is_loading}
                                         >
                                             {is_loading ? <Loading/> : null}
