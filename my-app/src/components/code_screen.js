@@ -15,7 +15,7 @@ const CodeScreen = () => {
 
     const getCode = () => {
         axios
-            .get("http://127.0.0.1:8000/get_code")
+            .get("https://kolomietskursach.pythonanywhere.com/get_code")
             .then(function (response) {
                 setCode(response.data.code);
                 setTimeLeft(response.data.time_left);

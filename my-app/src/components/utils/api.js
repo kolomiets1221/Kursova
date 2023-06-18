@@ -14,7 +14,7 @@ export const register = (u_name, u_username, u_email, u_password, u_position) =>
     };
 
     return axios
-        .get('http://127.0.0.1:8000/register', options)
+        .get('https://kolomietskursach.pythonanywhere.com/register', options)
         .then(function (response) {
             return response;
         })
@@ -41,7 +41,7 @@ export const login = (u_username, u_password, remember = false) => {
     };
 
     return axios
-        .get('http://127.0.0.1:8000/login', options)
+        .get('https://kolomietskursach.pythonanywhere.com/login', options)
         .then(function (response) {
             return response;
         })
@@ -60,7 +60,7 @@ export const login = (u_username, u_password, remember = false) => {
 
 export const get_profile = () => {
     return axios
-        .get('http://127.0.0.1:8000/user_info')
+        .get('https://kolomietskursach.pythonanywhere.com/user_info')
         .then(function (response) {
                 return response;
             }
@@ -80,7 +80,7 @@ export const get_profile = () => {
 
 export const get_code = () => {
     return axios
-        .get('http://127.0.0.1:8000/get_code')
+        .get('https://kolomietskursach.pythonanywhere.com/get_code')
         .then(function (response) {
                 return response;
             }
@@ -106,7 +106,7 @@ export const start_shift = (code_u, id_u) => {
         },
     };
     return axios
-        .get('http://127.0.0.1:8000/start_shift', options)
+        .get('https://kolomietskursach.pythonanywhere.com/start_shift', options)
         .then(function (response) {
                 return response;
             }
@@ -132,7 +132,7 @@ export const end_shift = (id, prod) => {
         },
     };
     return axios
-        .get('http://127.0.0.1:8000/end_shift', options)
+        .get('https://kolomietskursach.pythonanywhere.com/end_shift', options)
         .then(function (response) {
                 return response;
             }
@@ -156,7 +156,7 @@ export const upload_image = (file) => {
     formData.append('image', file);
 
     return axios
-        .post('http://127.0.0.1:8000/upload_avatar', formData, {
+        .post('https://kolomietskursach.pythonanywhere.com/upload_avatar', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -179,7 +179,7 @@ export const upload_image = (file) => {
 
 export const get_employers = () => {
     return axios
-        .get('http://127.0.0.1:8000/get_employers')
+        .get('https://kolomietskursach.pythonanywhere.com/get_employers')
         .then(function (response) {
                 return response;
             }
@@ -205,7 +205,7 @@ export const get_employee = (id) => {
         },
     };
     return axios
-        .get('http://127.0.0.1:8000/get_employee', options)
+        .get('https://kolomietskursach.pythonanywhere.com/get_employee', options)
         .then(function (response) {
             return response;
         })
@@ -224,7 +224,7 @@ export const get_employee = (id) => {
 
 export const get_user_info = () => {
     return axios
-        .get('http://127.0.0.1:8000/get_user_info')
+        .get('https://kolomietskursach.pythonanywhere.com/get_user_info')
         .then(function (response) {
             return response;
         })
@@ -243,7 +243,7 @@ export const get_user_info = () => {
 
 export const logout = () => {
     return axios
-        .get('http://127.0.0.1:8000/logout')
+        .get('https://kolomietskursach.pythonanywhere.com/logout')
         .then(function (response) {
             return response;
         })
