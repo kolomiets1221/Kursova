@@ -3,6 +3,7 @@ import os
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_migrate
+import hashlib
 from django.dispatch import receiver
 
 
@@ -31,7 +32,11 @@ class Shift(models.Model):
 
 
 def avatar_upload_path(instance, filename):
-    return f"avatars/{instance.name}_{filename.replace(' ', '_')}"
+    data = f"{instance.id}_{filename.replace(' ', '_')}"
+    data = data[0:data.find('.')]
+    ext = filename[filename.rfind('.'):len(filename)]
+    #return hashed data
+    return f"{hashlib.md5(data.encode()).hexdigest()}{ext}"
 
 
 class Employer(models.Model):

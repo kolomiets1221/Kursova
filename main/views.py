@@ -1,14 +1,12 @@
 import random
 import secrets
-import time
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect
-from django.utils import timezone
+from django.templatetags.static import static
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 
 from .models import *
 
@@ -162,8 +160,7 @@ def get_all_shifts(request):
 
 
 def test(request):
-    print(request.GET)
-    return JsonResponse({'success': 'test'})
+    return JsonResponse({'message': static("default.png")})
 
 
 def get_code(request):
@@ -296,7 +293,7 @@ def user_info(request):
     shifts = Shift.objects.filter(employee=emploer)
     return JsonResponse({
         "name": emploer.name,
-        "img_url": f"{home_url}/avatar?name={emploer.name}",
+        "img_url": f"{home_url + emploer.avatar.url}",
         "position": emploer.get_position_display(),
         "total_shifts": len(Shift.objects.filter(employee=emploer)),
         "average_worktime": f"{emploer.employ_average_work_time()}",
@@ -316,3 +313,25 @@ def user_info(request):
             "finished": shift.finished
         } for shift in shifts]
     })
+
+
+from django import forms
+
+
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField()
+
+@csrf_exempt
+def upload_image(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'User is not authenticated'})
+
+    if request.method == 'POST':
+        image = request.FILES['image']
+        user = User.objects.get(username=request.user)
+        emploer = Employer.objects.get(user=user)
+        emploer.avatar = image
+        emploer.save()
+        return JsonResponse({'message': 'image uploaded'}, status=201)
+    else:
+        return JsonResponse({'message': 'image not uploaded'})

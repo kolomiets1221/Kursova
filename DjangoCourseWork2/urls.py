@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import main.views as views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,5 +37,6 @@ urlpatterns = [
     path("get_my_shifts", views.get_my_shifts, name="get_my_shifts"),
     path("ds_rq", views.displayrequest, name="displayrequest"),
     path("test", views.test, name="get_my_requests"),
-]
+    path("upload_avatar", views.upload_image, name="upload_avatar"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
