@@ -1,7 +1,7 @@
 import random
 import secrets
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect
@@ -280,3 +280,20 @@ def get_emploeyer_info(request):
             "finished": shift.finished
         } for shift in shifts]
     })
+
+def get_user_info(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'User is not authenticated'}, status=404)
+    user = User.objects.get(username=request.user)
+    if not Employer.objects.filter(user=user).exists():
+        return JsonResponse({'error': 'invalid user'}, status=404)
+    emploer = Employer.objects.get(user=user)
+    return JsonResponse({
+        "name": user.username,
+        "avatar": f"{home_url + emploer.avatar.url}",
+        "position": emploer.get_position_display(),
+        }, status=200)
+
+def log_out(request):
+    logout(request)
+    return JsonResponse({'message': 'logged out'}, status=200)

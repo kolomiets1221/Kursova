@@ -33,5 +33,7 @@ urlpatterns = [
     path("test", views.test, name="get_my_requests"),
     path("upload_avatar", views.upload_image, name="upload_avatar"),
     path("get_employee", views.get_emploeyer_info, name="get_employee"),
+    path("get_user_info", views.get_user_info, name="get_user_info"),
+    path("logout", views.log_out, name="logout"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
