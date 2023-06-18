@@ -78,15 +78,46 @@ function App() {
     const register = () => {
         set_message("");
         if (
-            username === "" ||
-            password === "" ||
-            email === "" ||
-            name === "" ||
-            position === ""
+            username === ""
         ) {
-            set_message("Please fill all fields");
+            set_message("Please fill username");
             return;
         }
+
+        if(
+            password === ""
+        ) {
+            set_message("Please fill password");
+            return;
+        }else if (password.length < 8) {
+            set_message("Password should be at least 8 characters long");
+            return;
+        }
+
+        if(
+            email === ""
+        ){
+            set_message("Please fill email");
+            return;
+        }else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                set_message("Please enter a valid email");
+                return;
+            }
+        }
+
+        if(
+            name === ""
+            ){
+            set_message("Please fill name");
+            return;
+        }
+        if(position === ""){
+            set_message("Please fill position");
+            return;
+        }
+
         set_is_loading(true);
         const resp = api.register(name, username, email, password, position);
         resp.then(function (response) {
