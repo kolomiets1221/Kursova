@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {BrowserRouter as Router, Route, Routes, useNavigate} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Route, Routes, useNavigate} from 'react-router-dom';
 import Main from './components/Main';
 import LoginPage from "./components/login_page";
 import RegisterPage from "./components/register_page";
@@ -7,6 +7,8 @@ import './App.css';
 import * as api from "./components/utils/api";
 import CodeScreen from "./components/code_screen";
 import Header from "./components/header";
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 let username = "";
 let password = "";
@@ -16,7 +18,26 @@ let position = "";
 let remember = false;
 
 
+
 function App() {
+    const createNotification = (type, message) => {
+        switch (type) {
+            case 'info':
+                NotificationManager.info(message);
+                break;
+            case 'success':
+                NotificationManager.success(message);
+                break;
+            case 'warning':
+                NotificationManager.warning(message);
+                break;
+            case 'error':
+                NotificationManager.error(message);
+                break;
+            default:
+                break;
+        }
+    }
     const [is_loading, set_is_loading] = useState(false);
     const [message, set_message] = useState("");
     const navigate = useNavigate()
@@ -64,6 +85,8 @@ function App() {
         });
     };
 
+
+
     const handle_remember = (value) => {
         remember = value;
     }
@@ -92,9 +115,12 @@ function App() {
 
     return (
        <div>
+           <NotificationContainer />
            <Header/>
            <Routes>
-               <Route path="/" element={<Main/>}/>
+               <Route path="/" element={<Main
+               createNotification={createNotification}
+               />}/>
                <Route path="/login" element={<LoginPage
                    changeUsername={changeUsername}
                    changePassword={changePassword}

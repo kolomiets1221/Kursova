@@ -4,10 +4,33 @@ import {Dialog, Transition} from '@headlessui/react';
 import {ExclamationTriangleIcon} from '@heroicons/react/24/outline';
 import {CheckIcon} from "@heroicons/react/20/solid";
 import Loading from "./loading";
+import {FaUpload} from 'react-icons/fa';
+import createNotificatiom from "../App.js";
 
-const Main = () => {
+const Main = ({
+                  createNotification
+              }) => {
 
     const [is_loading, set_is_loading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+
+    const handleImageChange = (e) => {
+        setSelectedImage(e.target.files[0]);
+
+        const resp = api.upload_image(e.target.files[0]);
+        resp.then(function (response) {
+                if (response.status === 201) {
+                    console.log("Success");
+                    reload_data();
+                    createNotification("success", "Фото успішно завантажено");
+                } else {
+                    console.log("Error");
+                }
+            }
+        )
+    };
+
 
     const [produced, setProduced] = useState(0);
     const [shiftCode, setShiftCode] = useState("");
@@ -22,10 +45,14 @@ const Main = () => {
     const [open_f, setOpen_f] = useState(false);
     const cancelButtonRef = useRef(null)
 
-    useEffect(() => {
+    const reload_data = () => {
         api.get_profile().then((response) => {
             setData(response.data);
         });
+    }
+
+    useEffect(() => {
+        reload_data();
     }, []);
 
     const moneyFormat = (money) => {
@@ -48,21 +75,49 @@ const Main = () => {
                 <div className="bg-gray-100 p-6 rounded-lg shadow-md">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
-                            <img
-                                src={data.img_url}
-                                alt={data.name}
-                                className="w-10 h-10 rounded-full mr-4"
-                            />
+                            <div>
+                                <img
+                                    src={data.img_url}
+                                    alt={data.name}
+                                    className="w-10 h-10 rounded-full mr-4"
+                                    style={{
+                                        objectFit: "cover",
+                                    }}
+                                />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="hidden"
+                                    ref={cancelButtonRef}
+                                />
+                                {/*add camera icon*/}
+                                <div
+                                    className="justify-center"
+                                    style={{
+                                        top: "0",
+                                        right: "0",
+                                        width: "2rem",
+                                        height: "2rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+
+                                    }}
+                                >
+                                    <FaUpload className="cursor-pointer text-gray-500 justify-center" size={20}
+                                              onClick={() => cancelButtonRef.current.click()}
+                                    />
+                                </div>
+
+                            </div>
                             <div>
                                 <h2 className="text-xl font-bold">{data.name}</h2>
                                 <p className="text-gray-500">{data.position}</p>
                                 <p className="text-gray-500">Очікувана
                                     Зарплата: {moneyFormat(parseInt(data.expected_salary))} UAH</p>
                             </div>
-                        </div>
-                        <div className="flex items-center">
-                            <span className="mr-2">Всього Змін: {data.total_shifts}</span>
-                            <span>Середній Робочий Час: {data.average_worktime}</span>
+
                         </div>
                     </div>
                     <div
@@ -96,9 +151,14 @@ const Main = () => {
                                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                         Час Закінчення: {shift.end_time}
                                     </p>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                        Вироблено: {shift.producted}
-                                    </p>
+                                    {shift.finished ? (
+                                        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                            Вироблено: {shift.producted} шт.
+                                        </p>
+                                    ) : (
+                                        null
+                                    )
+                                    }
                                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                         Почато: {shift.employ_start_time}
                                     </p>
@@ -108,12 +168,8 @@ const Main = () => {
                                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                                         Робочий час зміни: {shift.shift_work_time} годин
                                     </p>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                                        Завершено: {shift.finished ? "Так" : "Ні"}
-                                    </p>
                                     <button
                                         disabled={shift.finished}
-                                        href="#"
                                         onClick={() => {
                                             console.log(shift.id);
                                             setId(shift.id);
@@ -174,16 +230,6 @@ const Main = () => {
                                 </svg>
                             </div>
                         )}
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p>Працював Минулого Місяця: {data.worked_last_month}</p>
-                            <p>Зміни у Наступному Місяці: {data.shifts_in_next_month}</p>
-                            <p>Очікувана Зарплата: {data.expected_salary}</p>
-                        </div>
-                        <div>
-                            <p>Всього Вироблено: {data.total_produced}</p>
-                        </div>
                     </div>
                 </div>
             ) : (
@@ -292,7 +338,8 @@ const Main = () => {
                                                 resp.then((data) => {
                                                     setOpen_f(false);
                                                     set_is_loading(false)
-                                                    window.location.reload();
+                                                    createNotification('success', 'Зміна завершена')
+                                                    reload_data();
                                                 });
                                             }}
                                             disabled={is_loading}
@@ -407,7 +454,8 @@ const Main = () => {
                                                 resp.then((data) => {
                                                     setOpen_s(false);
                                                     set_is_loading(false);
-                                                    window.location.reload();
+                                                    reload_data();
+                                                    createNotification('success', 'Зміна розпочата');
                                                 });
                                             }}
                                             disabled={is_loading}

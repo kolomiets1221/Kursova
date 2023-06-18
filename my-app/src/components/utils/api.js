@@ -149,3 +149,31 @@ export const end_shift = (id, prod) => {
             throw error;
         });
 }
+
+
+export const upload_image = (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return axios
+        .post('http://127.0.0.1:8000/upload_avatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+};
+
