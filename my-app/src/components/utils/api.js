@@ -222,4 +222,42 @@ export const get_employee = (id) => {
         });
 };
 
+export const get_user_info = () => {
+    return axios
+        .get('http://127.0.0.1:8000/get_user_info')
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+}
+
+export const logout = () => {
+    return axios
+        .get('http://127.0.0.1:8000/logout')
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            if (error.response) {
+                console.error('Request failed with status code:', error.response.status);
+                return error.response;
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            throw error;
+        });
+}
+
 

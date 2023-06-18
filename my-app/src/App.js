@@ -11,6 +11,7 @@ import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 import Workers from "./components/workers";
 import WorkerShifts from "./components/worker_shifts";
+import {get_user_info} from "./components/utils/api";
 
 let username = "";
 let password = "";
@@ -22,6 +23,8 @@ let remember = false;
 
 
 function App() {
+
+    const [is_logged_in, set_is_logged_in] = useState(true);
     const createNotification = (type, message) => {
         switch (type) {
             case 'info':
@@ -40,6 +43,18 @@ function App() {
                 break;
         }
     }
+
+    useEffect(() => {
+        const resp = api.get_user_info();
+        resp.then(function (response) {
+            if (response.status === 200) {
+                set_is_logged_in(true);
+            } else {
+                set_is_logged_in(false);
+            }
+        });
+    }, []);
+
     const [is_loading, set_is_loading] = useState(false);
     const [message, set_message] = useState("");
     const navigate = useNavigate()
@@ -79,9 +94,11 @@ function App() {
             if (response.status === 201) {
                 navigate("/");
                 set_is_loading(false);
+                set_is_logged_in(true);
                 set_message("")
             } else {
                 set_message(response.data.message);
+                set_is_logged_in(false);
                 set_is_loading(false);
             }
         });
@@ -106,9 +123,11 @@ function App() {
                         navigate("/");
                         set_is_loading(false);
                         set_message("")
+                        set_is_logged_in(true);
                     } else {
                         set_message(response.data.message);
                         set_is_loading(false);
+                        set_is_logged_in(false);
                     }
                 }
             );
@@ -118,7 +137,9 @@ function App() {
     return (
        <div>
            <NotificationContainer />
-           <Header/>
+           <Header
+           is_logged_in={is_logged_in}
+           />
            <Routes>
                <Route path="/" element={<Main
                createNotification={createNotification}

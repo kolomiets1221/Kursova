@@ -131,41 +131,41 @@ const Main = ({
                         {data.shifts ? (
                             data.shifts.map((shift) => (
                                 <div
-                                    className={`max-w-sm p-6 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ${
+                                    className={`max-w-sm p-6 border border-gray-200 rounded-lg shadow ${
                                         shift.is_active
                                             ? 'bg-blue-100'
                                             : shift.finished
-                                                ? 'bg-green-100 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'
-                                                : 'bg-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+                                                ? 'bg-green-100 '
+                                                : 'bg-white '
                                     }`}
                                     key={shift.id}
                                 >
                                     <a href="#">
-                                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
                                             Зміна #{shift.id}
                                         </h5>
                                     </a>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <p className="mb-3 font-normal text-gray-700 d">
                                         Час Початку: {shift.start_time}
                                     </p>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <p className="mb-3 font-normal text-gray-700 ">
                                         Час Закінчення: {shift.end_time}
                                     </p>
                                     {shift.finished ? (
-                                        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                        <p className="mb-3 font-normal text-gray-700 ">
                                             Вироблено: {shift.producted} шт.
                                         </p>
                                     ) : (
                                         null
                                     )
                                     }
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <p className="mb-3 font-normal text-gray-700 ">
                                         Почато: {shift.employ_start_time}
                                     </p>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <p className="mb-3 font-normal text-gray-700 ">
                                         Закінчено: {shift.employ_end_time}
                                     </p>
-                                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <p className="mb-3 font-normal text-gray-700 ">
                                         Робочий час зміни: {shift.shift_work_time} годин
                                     </p>
                                     <button
@@ -183,8 +183,8 @@ const Main = ({
                                             shift.finished
                                                 ? 'bg-gray-400'
                                                 : shift.is_active
-                                                    ? 'bg-red-500 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 hover:bg-blue-800'
-                                                    : 'bg-green-500 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 hover:bg-blue-800'
+                                                    ? 'bg-red-500  hover:bg-blue-800'
+                                                    : 'bg-green-500  hover:bg-blue-800'
                                         }`}
                                     >
                                         {shift.finished ? "Зміна закінчилась" : shift.is_active ? "Завершити зміну" : "Почати зміну"}
