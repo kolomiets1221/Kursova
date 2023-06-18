@@ -5,6 +5,7 @@ import * as api from "./utils/api";
 const Header = (
     {
         is_logged_in,
+        set_is_logged_in
     }
 ) => {
     return (
@@ -23,6 +24,7 @@ const Header = (
                                     onClick={
                                         () => {
                                             api.logout();
+                                            set_is_logged_in(false);
                                         }
                                     }
                                    className="text-white hover:text-gray-200 font-semibold">Вийти</Link>

@@ -7,7 +7,7 @@ import './App.css';
 import * as api from "./components/utils/api";
 import CodeScreen from "./components/code_screen";
 import Header from "./components/header";
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import Workers from "./components/workers";
 import WorkerShifts from "./components/worker_shifts";
@@ -19,7 +19,6 @@ let email = "";
 let name = "";
 let position = "";
 let remember = false;
-
 
 
 function App() {
@@ -105,7 +104,6 @@ function App() {
     };
 
 
-
     const handle_remember = (value) => {
         remember = value;
     }
@@ -135,39 +133,40 @@ function App() {
 
 
     return (
-       <div>
-           <NotificationContainer />
-           <Header
-           is_logged_in={is_logged_in}
-           />
-           <Routes>
-               <Route path="/" element={<Main
-               createNotification={createNotification}
-               />}/>
-               <Route path="/login" element={<LoginPage
-                   changeUsername={changeUsername}
-                   changePassword={changePassword}
-                   login={login}
-                   is_loading={is_loading}
-                   message={message}
-                   remember={handle_remember}
-               />}/>
-               <Route path="/register" element={<RegisterPage
-                   changeEmail={changeEmail}
-                   changeName={changeName}
-                   changePassword={changePassword}
-                   changePosition={changePosition}
-                   changeUsername={changeUsername}
-                   register_user={register}
-                   is_loading={is_loading}
-                   message={message}
-               />}/>
-               <Route path="/code" element={<CodeScreen/>}/>
+        <div>
+            <NotificationContainer/>
+            <Header
+                is_logged_in={is_logged_in}
+                set_is_logged_in={set_is_logged_in}
+            />
+            <Routes>
+                <Route path="/" element={<Main
+                    createNotification={createNotification}
+                />}/>
+                <Route path="/login" element={<LoginPage
+                    changeUsername={changeUsername}
+                    changePassword={changePassword}
+                    login={login}
+                    is_loading={is_loading}
+                    message={message}
+                    remember={handle_remember}
+                />}/>
+                <Route path="/register" element={<RegisterPage
+                    changeEmail={changeEmail}
+                    changeName={changeName}
+                    changePassword={changePassword}
+                    changePosition={changePosition}
+                    changeUsername={changeUsername}
+                    register_user={register}
+                    is_loading={is_loading}
+                    message={message}
+                />}/>
+                <Route path="/code" element={<CodeScreen/>}/>
                 <Route path="/workers" element={<Workers/>}/>
                 <Route path="/workers/:id" element={<WorkerShifts/>}/>
-               <Route path="*" element={<h1>404</h1>}/>
-           </Routes>
-       </div>
+                <Route path="*" element={<h1>404</h1>}/>
+            </Routes>
+        </div>
     );
 }
 
