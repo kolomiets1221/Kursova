@@ -77,21 +77,19 @@ function App() {
 
 
     const register = () => {
+
+        if(
+            name === ""
+        ){
+            set_message("Please fill name");
+            return;
+        }
+
         set_message("");
         if (
             username === ""
         ) {
             set_message("Please fill username");
-            return;
-        }
-
-        if(
-            password === ""
-        ) {
-            set_message("Please fill password");
-            return;
-        }else if (password.length < 8) {
-            set_message("Password should be at least 8 characters long");
             return;
         }
 
@@ -109,11 +107,16 @@ function App() {
         }
 
         if(
-            name === ""
-            ){
-            set_message("Please fill name");
+            password === ""
+        ) {
+            set_message("Please fill password");
+            return;
+        }else if (password.length < 8) {
+            set_message("Password should be at least 8 characters long");
             return;
         }
+
+
         if(position === ""){
             set_message("Please fill position");
             return;
