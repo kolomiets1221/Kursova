@@ -9,6 +9,8 @@ import CodeScreen from "./components/code_screen";
 import Header from "./components/header";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import Workers from "./components/workers";
+import WorkerShifts from "./components/worker_shifts";
 
 let username = "";
 let password = "";
@@ -140,6 +142,9 @@ function App() {
                    message={message}
                />}/>
                <Route path="/code" element={<CodeScreen/>}/>
+                <Route path="/workers" element={<Workers/>}/>
+                <Route path="/workers/:id" element={<WorkerShifts/>}/>
+               <Route path="*" element={<h1>404</h1>}/>
            </Routes>
        </div>
     );

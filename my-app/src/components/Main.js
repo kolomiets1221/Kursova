@@ -77,7 +77,7 @@ const Main = ({
                         <div className="flex items-center">
                             <div>
                                 <img
-                                    src={data.img_url}
+                                    src={data.avatar}
                                     alt={data.name}
                                     className="w-10 h-10 rounded-full mr-4"
                                     style={{

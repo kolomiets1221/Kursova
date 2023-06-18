@@ -11,6 +11,8 @@ const Header = () => {
                         <Link to={"/"} className="text-white hover:text-gray-200 font-semibold">Профіль</Link>
                         <Link to={"/register"} className="text-white hover:text-gray-200 font-semibold">Реєстрація</Link>
                         <Link to={"/login"} className="text-white hover:text-gray-200 font-semibold">Увійти</Link>
+                        <Link to={"/workers"} className="text-white hover:text-gray-200 font-semibold">Працівники</Link>
+                        <Link to={"/code"} className="text-white hover:text-gray-200 font-semibold">Код</Link>
                     </ul>
                 </nav>
             </div>
