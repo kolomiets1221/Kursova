@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const CodeScreen = () => {
@@ -26,22 +26,23 @@ const CodeScreen = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-600 flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8"
-        style={{
+        <div
+            className="min-h-screen bg-gray-600 flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8"
+            style={{
                 backgroundColor: "#1f2937",
             }}
         >
             <div
-                 style={{
-                     borderRadius: "0.5rem",
-                     alignItems: "center",
-                     justifyContent: "center",
-                     display: "flex",
-                        flexDirection: "column",
-
-                 }}
+                style={{
+                    borderRadius: "0.5rem",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    maxWidth: "90%", // Limit the width to 90% of the parent container
+                }}
             >
-                <h2 className="mt-6 text-center font-extrabold text-green-500 text-9xl">
+                <h2 className="mt-6 text-center font-extrabold text-green-500 text-5xl">
                     {code}
                 </h2>
                 <p className="mt-4 text-center text-white text-2xl">
